@@ -1,0 +1,89 @@
+# ==============================
+# Dependencies
+# ==============================
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# ==============================
+# Build outputs
+# ==============================
+dist/
+dist-ssr/
+build/
+.out/
+.next/
+.vercel/
+
+# ==============================
+# Environment variables (IMPORTANT)
+# ==============================
+.env
+.env.*
+!.env.example
+
+# ==============================
+# Logs
+# ==============================
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==============================
+# OS generated files
+# ==============================
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ==============================
+# IDE / Editor
+# ==============================
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swp
+*.swo
+
+# ==============================
+# Temporary files
+# ==============================
+*.tmp
+*.temp
+.cache/
+coverage/
+
+# ==============================
+# TypeScript
+# ==============================
+*.tsbuildinfo
+
+# ==============================
+# Vite cache
+# ==============================
+node_modules/.vite
+.vite
+
+# ==============================
+# Testing
+# ==============================
+coverage/
+test-results/
+
+# ==============================
+# Misc
+# ==============================
+*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

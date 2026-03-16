@@ -1,0 +1,192 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 28% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    --primary: 213 94% 48%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 40% 94%;
+    --secondary-foreground: 215 28% 17%;
+
+    --muted: 210 33% 96%;
+    --muted-foreground: 215 16% 47%;
+
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 213 94% 48%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 213 94% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 40% 94%;
+    --sidebar-accent-foreground: 215 28% 17%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 213 94% 48%;
+
+    /* Custom dairy tokens */
+    --dairy-blue: 213 94% 48%;
+    --dairy-light-blue: 210 100% 96%;
+    --dairy-sky: 199 89% 48%;
+    --dairy-green: 152 69% 45%;
+    --dairy-amber: 38 92% 50%;
+    --dairy-rose: 350 89% 60%;
+    --dairy-purple: 262 83% 58%;
+
+    --gradient-hero: linear-gradient(135deg, hsl(213 94% 48%), hsl(199 89% 48%));
+    --shadow-card: 0 1px 3px 0 hsl(215 28% 17% / 0.06), 0 1px 2px -1px hsl(215 28% 17% / 0.06);
+    --shadow-card-hover: 0 10px 25px -5px hsl(213 94% 48% / 0.12), 0 8px 10px -6px hsl(213 94% 48% / 0.08);
+  }
+
+  .dark {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 95%;
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 213 100% 58%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 6% 10%;
+    --secondary-foreground: 0 0% 90%;
+    --muted: 240 6% 10%;
+    --muted-foreground: 0 0% 55%;
+    --accent: 213 100% 58%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 6% 14%;
+    --input: 240 6% 14%;
+    --ring: 213 100% 58%;
+    --sidebar-background: 0 0% 0%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 213 100% 58%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 6% 10%;
+    --sidebar-accent-foreground: 0 0% 90%;
+    --sidebar-border: 240 6% 12%;
+    --sidebar-ring: 213 100% 58%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Inter', sans-serif;
+    
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Nunito', sans-serif;
+  }
+}
+
+@layer utilities {
+  .gradient-hero {
+    background: linear-gradient(135deg, hsl(213 100% 58%), hsl(199 89% 48%));
+  }
+
+  .gradient-hero-soft {
+    background: linear-gradient(135deg, hsl(213 100% 58% / 0.08), hsl(199 89% 48% / 0.08));
+  }
+
+  .shadow-dairy {
+    box-shadow: 0 1px 3px 0 hsl(215 28% 17% / 0.06), 0 1px 2px -1px hsl(215 28% 17% / 0.06);
+  }
+
+  .shadow-dairy-hover {
+    box-shadow: 0 0 20px -4px hsl(213 100% 58% / 0.25), 0 0 8px -4px hsl(213 100% 58% / 0.15);
+  }
+
+  .glow-primary {
+    box-shadow: 0 0 16px hsl(213 100% 58% / 0.3), 0 0 4px hsl(213 100% 58% / 0.2);
+  }
+
+  .dairy-icon-blue {
+    color: hsl(213 94% 48%);
+    background: hsl(213 94% 48% / 0.1);
+  }
+
+  .dairy-icon-green {
+    color: hsl(152 69% 45%);
+    background: hsl(152 69% 45% / 0.1);
+  }
+
+  .dairy-icon-amber {
+    color: hsl(38 92% 50%);
+    background: hsl(38 92% 50% / 0.1);
+  }
+
+  .dairy-icon-rose {
+    color: hsl(350 89% 60%);
+    background: hsl(350 89% 60% / 0.1);
+  }
+
+  .dairy-icon-purple {
+    color: hsl(262 83% 58%);
+    background: hsl(262 83% 58% / 0.1);
+  }
+
+  .dairy-icon-sky {
+    color: hsl(199 89% 48%);
+    background: hsl(199 89% 48% / 0.1);
+  }
+}
+
+/* ULTRA LUXURY AURORA BACKGROUND */
+
+body {
+  background:
+    radial-gradient(circle at 10% 10%, rgba(96,165,250,0.25), transparent 30%),
+    radial-gradient(circle at 90% 20%, rgba(168,85,247,0.22), transparent 35%),
+    radial-gradient(circle at 50% 90%, rgba(244,114,182,0.18), transparent 40%),
+    linear-gradient(135deg,#f8fbff 0%,#f6f7ff 40%,#fff7fb 100%);
+}
+
+/* glass card */
+.glass-card {
+  backdrop-filter: blur(18px);
+  background: rgba(255,255,255,0.55);
+  border: 1px solid rgba(255,255,255,0.35);
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.06),
+    0 6px 18px rgba(99,102,241,0.08);
+}
+
+/* hover lift */
+.glass-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 28px 70px rgba(0,0,0,0.10),
+    0 10px 24px rgba(99,102,241,0.14);
+}
+
+html, body {
+  overflow-x: hidden;
+}

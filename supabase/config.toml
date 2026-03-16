@@ -1,0 +1,13 @@
+project_id = "gbugdqytlenwhwsflcek"
+
+[functions.signup]
+verify_jwt = false
+
+[functions.create-order]
+verify_jwt = false
+
+[functions.razorpay-create-order]
+verify_jwt = false
+
+[functions.razorpay-verify]
+verify_jwt = false
