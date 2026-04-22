@@ -30,7 +30,7 @@ import FarmerBilling from "@/pages/farmer/FarmerBilling";
 import AdminSupportTicketsPage from "@/pages/admin/AdminSupportTicketsPage";
 
 import ForgotPassword from "@/pages/ForgotPassword";
-import ResetPassword from "@/pages/ResetPassword";";
+import ResetPassword from "@/pages/ResetPassword";
 
 const queryClient = new QueryClient();
 
