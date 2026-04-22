@@ -105,7 +105,7 @@ export default function CustomerDashboard() {
               <Route path="orders" element={<OrdersPage />} />
               <Route path="orders/:orderId" element={<OrderDetailPage />} />
 
-              <Route path="delivery" element={<DeliveryTracking embedded />} />
+              <Route path="delivery" element={<DeliveryTracking />} />
               <Route path="cancel-shift" element={<CustomerCancelShiftPage />} />
 
               <Route path="billing" element={<CustomerBillingPage />} />
