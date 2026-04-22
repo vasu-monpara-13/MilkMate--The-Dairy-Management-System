@@ -129,8 +129,7 @@ function GlassCard({
   children: React.ReactNode;
 }) {
   return (
-    <Card
-      className={cn(
+    <Card className={cn(
         "border-white/45 bg-white/60 backdrop-blur-2xl shadow-[0_12px_40px_rgba(99,102,241,0.12)]",
         "dark:border-white/10 dark:bg-white/5 dark:shadow-[0_14px_40px_rgba(0,0,0,0.35)]",
         className
