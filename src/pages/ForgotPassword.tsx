@@ -18,7 +18,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: "http://localhost:8080/reset-password",
+      redirectTo: "https://your-vercel-domain.vercel.app/reset-password",
     });
 
     setLoading(false);
