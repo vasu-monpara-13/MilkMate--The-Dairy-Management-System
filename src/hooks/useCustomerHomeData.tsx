@@ -236,7 +236,7 @@ function PremiumStatCard({
   );
 }
 
-export default function CustomerHome() {
+export const useCustomerHomeData = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -1136,4 +1136,4 @@ export default function CustomerHome() {
       />
     </div>
   );
-}
+};
