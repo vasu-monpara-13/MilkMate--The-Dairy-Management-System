@@ -1,5 +1,4 @@
-// D:\milkmate_super_fixed - Copy1\src\pages\shop\CustomerHome.tsx
-import { useMemo } from "react";
+import { useMemo, useEffect } from "react";
 import { motion } from "framer-motion";
 import type { Variants } from "framer-motion";
 import {
@@ -32,12 +31,24 @@ import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useCustomerHomeData } from "@/hooks/useCustomerHomeData";
 
-import type { HTMLAttributes, ReactNode } from "react";
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      "elevenlabs-convai": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      > & {
+        "agent-id": string;
+        "data-user-name"?: string;
+        "data-user-role"?: string;
+      };
+    }
+  }
+}
 
 function safeNum(v: any) {
   const n = Number(v);
@@ -58,9 +69,32 @@ function shiftLabel(s?: string | null) {
   return "Morning Shift";
 }
 
+function normalizeShift(s?: string | null) {
+  const v = String(s || "").toLowerCase().trim();
+  if (v.includes("even")) return "evening";
+  return "morning";
+}
+
+function deliveryStatusRank(status?: string | null) {
+  const v = String(status || "").toLowerCase().trim();
+
+  if (v === "delivered") return 3;
+  if (v === "out_for_delivery") return 2;
+  if (v === "scheduled") return 1;
+  return 0;
+}
+
+function formatDeliveryStatus(status?: string | null) {
+  const v = String(status || "").toLowerCase().trim();
+
+  if (v === "out_for_delivery") return "out for delivery";
+  if (v === "delivered") return "delivered";
+  if (v === "scheduled") return "scheduled";
+
+  return v || "scheduled";
+}
+
 const WEEK_KEYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] as const;
-
-
 
 const containerVariants: Variants = {
   hidden: { opacity: 0 },
@@ -115,18 +149,15 @@ function SoftPill({
   tone?: "slate" | "green" | "blue" | "violet" | "orange" | "rose";
 }) {
   const tones = {
-    slate:
-      "bg-slate-900 text-white dark:bg-white dark:text-slate-900",
+    slate: "bg-slate-900 text-white dark:bg-white dark:text-slate-900",
     green:
       "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300",
-    blue:
-      "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
+    blue: "bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300",
     violet:
       "bg-violet-100 text-violet-700 dark:bg-violet-500/15 dark:text-violet-300",
     orange:
       "bg-orange-100 text-orange-700 dark:bg-orange-500/15 dark:text-orange-300",
-    rose:
-      "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
+    rose: "bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300",
   };
 
   return (
@@ -161,7 +192,7 @@ function PremiumStatCard({
   loading?: boolean;
 }) {
   return (
-    <GlassCard className="rounded-[28px] overflow-hidden">
+    <GlassCard className="overflow-hidden rounded-[28px]">
       <CardContent className="relative p-5">
         <div
           className={cn(
@@ -210,6 +241,20 @@ function PremiumStatCard({
 export default function CustomerHome() {
   const navigate = useNavigate();
   const { user } = useAuth();
+
+  useEffect(() => {
+    const existingScript = document.querySelector(
+      'script[src="https://unpkg.com/@elevenlabs/convai-widget-embed"]'
+    );
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = "https://unpkg.com/@elevenlabs/convai-widget-embed";
+      script.async = true;
+      script.type = "text/javascript";
+      document.body.appendChild(script);
+    }
+  }, []);
 
   const customerId = user?.id ?? null;
   const home = useCustomerHomeData(customerId);
@@ -272,68 +317,46 @@ export default function CustomerHome() {
   );
 
   const subsFromHook = ((home as any).subscriptions ?? []) as any[];
-
   const todayDeliveries = (((home as any).todayDeliveries ?? []) as any[]);
 
   const bestTodayDeliveryBySubId = useMemo(() => {
-  const map = new Map<string, any>();
+    const map = new Map<string, any>();
 
-  for (const row of todayDeliveries) {
-    const subId = String(row?.subscription_id || "");
-    if (!subId) continue;
+    for (const row of todayDeliveries) {
+      const subId = String(row?.subscription_id || "");
+      if (!subId) continue;
 
-    const prev = map.get(subId);
+      const prev = map.get(subId);
 
-    if (!prev) {
-      map.set(subId, row);
-      continue;
-    }
-
-    const prevRank = deliveryStatusRank(prev?.status);
-    const nextRank = deliveryStatusRank(row?.status);
-
-    if (nextRank > prevRank) {
-      map.set(subId, row);
-      continue;
-    }
-
-    if (nextRank === prevRank) {
-      const prevTime = prev?.created_at ? new Date(prev.created_at).getTime() : 0;
-      const nextTime = row?.created_at ? new Date(row.created_at).getTime() : 0;
-
-      if (nextTime > prevTime) {
+      if (!prev) {
         map.set(subId, row);
+        continue;
+      }
+
+      const prevRank = deliveryStatusRank(prev?.status);
+      const nextRank = deliveryStatusRank(row?.status);
+
+      if (nextRank > prevRank) {
+        map.set(subId, row);
+        continue;
+      }
+
+      if (nextRank === prevRank) {
+        const prevTime = prev?.created_at
+          ? new Date(prev.created_at).getTime()
+          : 0;
+        const nextTime = row?.created_at
+          ? new Date(row.created_at).getTime()
+          : 0;
+
+        if (nextTime > prevTime) {
+          map.set(subId, row);
+        }
       }
     }
-  }
 
-  return map;
-}, [todayDeliveries]);
-
-function normalizeShift(s?: string | null) {
-  const v = String(s || "").toLowerCase().trim();
-  if (v.includes("even")) return "evening";
-  return "morning";
-}
-
-function deliveryStatusRank(status?: string | null) {
-  const v = String(status || "").toLowerCase().trim();
-
-  if (v === "delivered") return 3;
-  if (v === "out_for_delivery") return 2;
-  if (v === "scheduled") return 1;
-  return 0;
-}
-
-function formatDeliveryStatus(status?: string | null) {
-  const v = String(status || "").toLowerCase().trim();
-
-  if (v === "out_for_delivery") return "out for delivery";
-  if (v === "delivered") return "delivered";
-  if (v === "scheduled") return "scheduled";
-
-  return v || "scheduled";
-}
+    return map;
+  }, [todayDeliveries]);
 
   const activeSubs = useMemo(
     () =>
@@ -454,7 +477,7 @@ function formatDeliveryStatus(status?: string | null) {
       {/* Aurora blobs */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-24 -left-16 h-[24rem] w-[24rem] rounded-full bg-sky-300/35 blur-3xl dark:bg-sky-500/12" />
-        <div className="absolute top-24 right-[-6rem] h-[26rem] w-[26rem] rounded-full bg-violet-300/30 blur-3xl dark:bg-violet-500/12" />
+        <div className="absolute right-[-6rem] top-24 h-[26rem] w-[26rem] rounded-full bg-violet-300/30 blur-3xl dark:bg-violet-500/12" />
         <div className="absolute bottom-[-7rem] left-[25%] h-[24rem] w-[24rem] rounded-full bg-pink-300/28 blur-3xl dark:bg-pink-500/12" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.45),transparent_35%),radial-gradient(circle_at_bottom_right,rgba(255,255,255,0.25),transparent_32%)] dark:bg-none" />
       </div>
@@ -481,7 +504,8 @@ function formatDeliveryStatus(status?: string | null) {
             </h1>
 
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              Your milk subscriptions, deliveries and billing in one premium workspace
+              Your milk subscriptions, deliveries and billing in one premium
+              workspace
             </p>
           </div>
 
@@ -506,7 +530,7 @@ function formatDeliveryStatus(status?: string | null) {
 
         {/* Hero */}
         <motion.div variants={itemVariants}>
-          <GlassCard className="rounded-[34px] overflow-hidden">
+          <GlassCard className="overflow-hidden rounded-[34px]">
             <CardContent className="relative p-6 md:p-8">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(59,130,246,0.20),transparent_24%),radial-gradient(circle_at_top_right,rgba(168,85,247,0.16),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(236,72,153,0.14),transparent_24%)]" />
 
@@ -632,30 +656,30 @@ function formatDeliveryStatus(status?: string | null) {
                 </div>
               ) : (
                 <div className="space-y-4">
-                 {activeSubs.map((s) => {
-            const name =
-              s?.product?.name || s?.row?.milk_label || "Milk Plan";
+                  {activeSubs.map((s) => {
+                    const name =
+                      s?.product?.name || s?.row?.milk_label || "Milk Plan";
 
-            const rawShift = s?.row?.shift;
-            const subShift = shiftLabel(rawShift);
-            const normalizedSubShift = normalizeShift(rawShift);
+                    const rawShift = s?.row?.shift;
+                    const subShift = shiftLabel(rawShift);
+                    const normalizedSubShift = normalizeShift(rawShift);
 
-            const qty = safeNum(s?.row?.qty);
-            const subId = String(s?.row?.id || "");
+                    const qty = safeNum(s?.row?.qty);
+                    const subId = String(s?.row?.id || "");
 
-            const matchedDelivery = bestTodayDeliveryBySubId.get(String(s?.row?.id || ""));
+                    const matchedDelivery = bestTodayDeliveryBySubId.get(subId);
 
-              const status = matchedDelivery
-                ? String(matchedDelivery.status || "scheduled").toLowerCase()
-                : "scheduled";
+                    const status = matchedDelivery
+                      ? String(matchedDelivery.status || "scheduled").toLowerCase()
+                      : "scheduled";
 
                     return (
                       <div
                         key={String(s?.row?.id)}
                         className="rounded-[28px] border border-white/45 bg-white/58 p-4 shadow-[0_10px_30px_rgba(148,163,184,0.12)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(99,102,241,0.12)] dark:border-white/10 dark:bg-white/5"
                       >
-                        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-                          <div className="flex items-center gap-4 min-w-0">
+                        <div className="flex min-w-0 flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+                          <div className="flex min-w-0 items-center gap-4">
                             <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[22px] bg-gradient-to-br from-emerald-400/20 via-teal-300/20 to-sky-300/20 ring-1 ring-emerald-200 dark:ring-emerald-500/20">
                               <Milk className="h-7 w-7 text-emerald-700 dark:text-emerald-300" />
                             </div>
@@ -674,7 +698,7 @@ function formatDeliveryStatus(status?: string | null) {
                                   {s?.farmerName || "Farmer"}
                                 </SoftPill>
 
-                               <SoftPill
+                                <SoftPill
                                   tone={
                                     status === "delivered"
                                       ? "green"
@@ -738,17 +762,21 @@ function formatDeliveryStatus(status?: string | null) {
                     No active plan yet.
                   </div>
                 ) : (
-                 activeSubs.map((s) => {
+                  activeSubs.map((s) => {
                     const name =
                       s?.product?.name || s?.row?.milk_label || "Milk Plan";
 
-                    const matchedDelivery = bestTodayDeliveryBySubId.get(String(s?.row?.id || ""));
+                    const matchedDelivery = bestTodayDeliveryBySubId.get(
+                      String(s?.row?.id || "")
+                    );
 
                     const currentRate =
                       matchedDelivery?.rate != null
                         ? `₹${formatINR(safeNum(matchedDelivery.rate))}/L`
                         : s?.product?.price != null && safeNum(s?.product?.price) > 0
-                        ? `₹${formatINR(safeNum(s?.product?.price))}/${s?.product?.unit || "L"}`
+                        ? `₹${formatINR(safeNum(s?.product?.price))}/${
+                            s?.product?.unit || "L"
+                          }`
                         : "Rate not set";
 
                     return (
@@ -765,7 +793,8 @@ function formatDeliveryStatus(status?: string | null) {
                             {name}
                           </p>
                           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                            {safeNum(s?.row?.qty)}L • {shiftLabel(s?.row?.shift)} • {currentRate}
+                            {safeNum(s?.row?.qty)}L • {shiftLabel(s?.row?.shift)} •{" "}
+                            {currentRate}
                           </p>
                         </div>
                       </div>
@@ -953,7 +982,7 @@ function formatDeliveryStatus(status?: string | null) {
           className="grid grid-cols-1 gap-4 xl:grid-cols-[1.25fr_0.9fr]"
         >
           <GlassCard className="rounded-[34px]">
-                <CardContent id="customer-notifications" className="p-6">
+            <CardContent id="customer-notifications" className="p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2">
                   <Bell className="h-4 w-4 text-slate-500 dark:text-slate-300" />
@@ -1101,6 +1130,12 @@ function formatDeliveryStatus(status?: string | null) {
           </GlassCard>
         </motion.div>
       </motion.div>
+
+      <elevenlabs-convai
+        agent-id="agent_3401kmjjhwaaea0vr9qw7q49hr3t"
+        data-user-name={displayName}
+        data-user-role="customer"
+      />
     </div>
   );
 }
