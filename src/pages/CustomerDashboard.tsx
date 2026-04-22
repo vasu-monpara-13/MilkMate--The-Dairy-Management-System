@@ -23,7 +23,7 @@ import ModifyPlanPage from "@/pages/customer/ModifyPlanPage";
 import CustomerSubscriptionPage from "@/pages/customer/CustomerSubscriptionPage";
 
 import DeliveryTracking from "@/pages/DeliveryTracking";
-import HelpAssistantBubble from "@/components/HelpAssistantBubble";
+
 
 const EXPANDED_W = 272;
 const COLLAPSED_W = 76;
@@ -119,12 +119,6 @@ export default function CustomerDashboard() {
             </Routes>
           </div>
         </main>
-
-        <HelpAssistantBubble
-          whatsappNumber="91XXXXXXXXXX"
-          supportEmail="support@milkmate.local"
-          supportPhone="+91XXXXXXXXXX"
-        />
       </div>
     </CartProvider>
   );
