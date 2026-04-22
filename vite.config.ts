@@ -4,7 +4,7 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 
 export default defineConfig(({ mode }) => ({
-  base: "/MilkMate/",
+  base: "/",
   build: {
     outDir: "dist",
     sourcemap: false,
